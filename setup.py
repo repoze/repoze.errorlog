@@ -51,6 +51,8 @@ setup(name='repoze.errorlog',
       install_requires=[],
       test_suite="repoze.errorlog.tests",
       entry_points = """\
+      [paste.filter_app_factory]
+      errorlog = repoze.errorlog:make_errorlog
       """
       )
 
