@@ -24,7 +24,7 @@ import StringIO
 from paste.request import construct_url
 from paste.request import parse_querystring
 
-from zope.pagetemplate.pagetemplatefile import PageTemplateFile
+import meld3
 
 _HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -73,15 +73,38 @@ class ErrorLog:
                 raise
 
     def index(self, url):
-        template = PageTemplateFile(os.path.join(_HERE,'templates','errors.pt'))
-        errors = self.errors
-        return template(errors=self.errors)
+        template = os.path.join(_HERE, 'templates', 'errors.html')
+        root = meld3.parse_xml(template)
+        if self.errors:
+            iterator = root.findmeld('error_li').repeat(self.errors)
+            for li_element, error in iterator:
+                time = li_element.findmeld('error_time')
+                time.content(error.time)
+                url = li_element.findmeld('error_url')
+                url.attributes(href=error.url)
+                url.content(error.description)
+        else:
+            content = root.findmeld('content')
+            content.content('<h1>No Recent Errors</h1>', structure=True)
+        return root.write_xhtmlstring()
 
     def entry(self, identifier):
-        template = PageTemplateFile(os.path.join(_HERE,'templates','entry.pt'))
+        template = os.path.join(_HERE, 'templates', 'entry.html')
         error = self.get_error(identifier)
-        # None is ok to pass as an error (the template handles this case)
-        return template(error=error)
+        root = meld3.parse_xml(template)
+        if error:
+            header = root.findmeld('header')
+            header.content('Error at %s' % error.time)
+            text = root.findmeld('text')
+            text.content(error.text)
+        else:
+            header = root.findmeld('header')
+            header.content('Error Expired')
+            text_area = root.findmeld('text_area')
+            text_area.content(
+                "<p>The error you're attempting to view has been flushed from "
+                "the online error log history.</p>", structure=True)
+        return root.write_xhtmlstring()
 
     def get_error(self, identifier):
         for error in self.errors:

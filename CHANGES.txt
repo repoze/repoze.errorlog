@@ -1,12 +1,16 @@
-Next Release
+0.3
 
-  0.2 didn't work as a filter. :-(
+  - 0.2 didn't work as a filter. :-(
+
+  - Don't use zope.pagetemplate, it has too many (potentially
+    conflicting) dependencies.  Instead use meld for template views.
 
 0.2
 
-  Provide a TTW view (accessible via '/__error_log__') of recent tracebacks.
+  - Provide a TTW view (accessible via '/__error_log__') of recent
+    tracebacks.
 
 0.1
 
-  Initial release.
+  - Initial release.
 

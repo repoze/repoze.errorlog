@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 import os
 
@@ -49,7 +49,8 @@ setup(name='repoze.errorlog',
       zip_safe=False,
       tests_require = [],
       install_requires=[
-           'zope.pagetemplate >= 3.4.0, < 3.4.1',
+           'meld3 >= 0.6.3',
+           'elementtree >= 1.2.6',
            'Paste >= 1.5',
            ],
       test_suite="repoze.errorlog.tests",
