@@ -1,3 +1,7 @@
+Next Release
+
+  0.2 didn't work as a filter. :-(
+
 0.2
 
   Provide a TTW view (accessible via '/__error_log__') of recent tracebacks.

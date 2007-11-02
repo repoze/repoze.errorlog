@@ -60,7 +60,7 @@ class ErrorLog:
         else:
             # we need to try to catch an error
             try:
-                result = self.application(environ, start_response)
+                return self.application(environ, start_response)
             except:
                 self.insert_error(sys.exc_info(), environ)
                 if self.channel is None:

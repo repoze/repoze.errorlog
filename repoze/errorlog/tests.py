@@ -33,9 +33,10 @@ class TestErrorLogging(unittest.TestCase):
         app = DummyApplication()
         elog = self._makeOne(app, channel='foo', keep=10)
         env = {}
-        elog(env, None)
+        result = elog(env, None)
         self.assertEqual(app.environ, env)
         self.assertEqual(app.start_response, None)
+        self.assertEqual(result, ['hello world'])
         
     def test_log_exc_no_channel(self):
         app = DummyApplication(KeyError)
@@ -131,6 +132,7 @@ class DummyApplication:
             raise self.exc
         self.environ = environ
         self.start_response = start_response
+        return ['hello world']
 
 def test_suite():
     return unittest.findTestCases(sys.modules[__name__])
