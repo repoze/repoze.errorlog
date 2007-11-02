@@ -1,0 +1,35 @@
+<html tal:define="error options/error">
+<head>
+</head>
+<body>
+
+<span tal:condition="error">
+  <h1>Error <span tal:content="error/identifier"/> at 
+  <span tal:content="error/time"/></h1>
+  
+  <p>
+    <a href="../__error_log__">Back to index</a>
+  </p>
+  
+  <pre tal:content="error/text"/>
+  
+  <p>
+    <a href="../__error_log__">Back to index</a>
+  </p>
+</span>
+
+<span tal:condition="not:error">
+
+  <h1>Error Expired</h1>
+  
+  <p>The error you're attempting to view has been flushed from the
+  online error log history.</p>
+  
+  <p>
+    <a href="../__error_log__">Back to index</a>
+  </p>
+
+</span>
+
+</body>
+</html>
