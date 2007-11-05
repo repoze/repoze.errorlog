@@ -1,4 +1,4 @@
-Next Release
+0.4
 
   - Add 'ignore' feature to configuration.  A value consisting of
     space-separated entry point names can be used here, indicating
