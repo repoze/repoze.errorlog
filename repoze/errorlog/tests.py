@@ -1,16 +1,22 @@
+import sys
 import unittest
 import logging
 
 class TestTopLevelFuncs(unittest.TestCase):
     def test_make_errorlog_no_filename(self):
         from repoze.errorlog import make_errorlog
+        me = sys.modules[__name__].__name__
+        dummy = '%s:DummyException' % me
         elog = make_errorlog(None, None, channel='foo', keep=10,
-                             path='/__error_log__')
+                             path='/__error_log__',
+                             ignore='KeyError AttributeError %s' % dummy)
         self.assertEqual(elog.channel, 'foo')
         self.assertEqual(elog.keep, 10)
         self.assertEqual(elog.path, '/__error_log__')
         self.assertEqual(elog.counter, 0)
         self.assertEqual(elog.errors, [])
+        self.assertEqual(elog.ignored_exceptions, (KeyError, AttributeError,
+                                                   DummyException))
 
 class TestErrorLogging(unittest.TestCase):
     def setUp(self):
@@ -31,12 +37,13 @@ class TestErrorLogging(unittest.TestCase):
 
     def test_ctor(self):
         elog = self._makeOne(None, channel='foo', keep=10,
-                             path='/__error_log__')
+                             path='/__error_log__', ignored_exceptions=())
         self.assertEqual(elog.channel, 'foo')
 
     def test_log_no_exc(self):
         app = DummyApplication()
-        elog = self._makeOne(app, channel='foo', keep=10, path='/__error_log__')
+        elog = self._makeOne(app, channel='foo', keep=10,
+                             path='/__error_log__', ignored_exceptions=())
         env = {}
         result = elog(env, None)
         self.assertEqual(app.environ, env)
@@ -47,7 +54,8 @@ class TestErrorLogging(unittest.TestCase):
         
     def test_log_exc_no_channel(self):
         app = DummyApplication(KeyError)
-        elog = self._makeOne(app, channel=None, keep=10, path='/__error_log__')
+        elog = self._makeOne(app, channel=None, keep=10,
+                             path='/__error_log__', ignored_exceptions=())
         from StringIO import StringIO
         errors = StringIO()
         env = {'wsgi.errors':errors}
@@ -59,16 +67,31 @@ class TestErrorLogging(unittest.TestCase):
     def test_log_exc_with_root_channel(self):
         app = DummyApplication(KeyError)
         root = ''
-        elog = self._makeOne(app, channel=root, keep=10, path='/__error_log__')
+        elog = self._makeOne(app, channel=root, keep=10,
+                             path='/__error_log__', ignored_exceptions=())
         env = {}
         self.assertRaises(KeyError, elog, env, None)
         self.failIf(self.errorstream.getvalue().find('KeyError') == -1)
         self.assertEqual(env['repoze.errorlog.path'], '/__error_log__')
         self.assertEqual(env['repoze.errorlog.entryid'], '0')
 
+    def test_log_ignored_builtin_exceptions(self):
+        app = DummyApplication(KeyError)
+        root = ''
+        from StringIO import StringIO
+        errors = StringIO()
+        env = {'wsgi.errors':errors}
+        elog = self._makeOne(app, channel=None, keep=10,
+                             path='/__error_log__',
+                             ignored_exceptions=(KeyError, AttributeError))
+        self.assertRaises(KeyError, elog, env, None)
+        self.assertEqual(errors.getvalue(), '')
+        self.assertEqual(elog.errors, [])
+
     def test_identifier_counter(self):
         app = DummyApplication(KeyError)
-        elog = self._makeOne(app, channel=None, keep=10, path='/__error_log__')
+        elog = self._makeOne(app, channel=None, keep=10,
+                             path='/__error_log__', ignored_exceptions=())
         from StringIO import StringIO
         errors = StringIO()
         env = {'wsgi.errors':errors}
@@ -81,7 +104,8 @@ class TestErrorLogging(unittest.TestCase):
     def test_show_index_view(self):
         env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
                'SERVER_NAME':'localhost', 'SERVER_PORT':'8080'}
-        elog = self._makeOne(None, channel=None, keep=10, path='/__error_log__')
+        elog = self._makeOne(None, channel=None, keep=10,
+                             path='/__error_log__', ignored_exceptions=())
         L = []
         def start_response(code, headers):
             L.append((code, headers))
@@ -102,7 +126,8 @@ class TestErrorLogging(unittest.TestCase):
         env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
                'SERVER_NAME':'localhost', 'SERVER_PORT':'8080',
                'QUERY_STRING':'entry=1'}
-        elog = self._makeOne(None, channel=None, keep=10, path='/__error_log__')
+        elog = self._makeOne(None, channel=None, keep=10,
+                             path='/__error_log__', ignored_exceptions=())
         L = []
         def start_response(code, headers):
             L.append((code, headers))
@@ -120,7 +145,8 @@ class TestErrorLogging(unittest.TestCase):
         env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
                'SERVER_NAME':'localhost', 'SERVER_PORT':'8080',
                'QUERY_STRING':'entry=1'}
-        elog = self._makeOne(None, channel=None, keep=10, path='/__error_log__')
+        elog = self._makeOne(None, channel=None, keep=10,
+                             path='/__error_log__', ignored_exceptions=())
         L = []
         def start_response(code, headers):
             L.append((code, headers))
@@ -134,7 +160,8 @@ class TestErrorLogging(unittest.TestCase):
         env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
                'SERVER_NAME':'localhost', 'SERVER_PORT':'8080',
                'QUERY_STRING':'entry=1'}
-        elog = self._makeOne(None, channel=None, keep=10, path='/__error_log__')
+        elog = self._makeOne(None, channel=None, keep=10,
+                             path='/__error_log__', ignored_exceptions=())
         import sys
         try:
             raise KeyError
@@ -161,6 +188,9 @@ class DummyApplication:
         self.environ = environ
         self.start_response = start_response
         return ['hello world']
+
+class DummyException(Exception):
+    pass
 
 def test_suite():
     return unittest.findTestCases(sys.modules[__name__])

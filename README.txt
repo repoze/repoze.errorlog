@@ -35,6 +35,7 @@ repoze.errorlog README
       channel = Repoze
       keep = 50
       path = /__my_error_log__
+      ignore = RuntimeError my.module:MyError
 
     By default, no channel is configured, and tracebacks are sent to
     the 'wsgi.errors' file handle (which should cause the errors to
@@ -43,6 +44,10 @@ repoze.errorlog README
 
     By default, the error log's path is '/__error_log__'; you can
     change this as necessary for your deployment.
+
+    The ignore parameter prevents the exceptions named from being
+    logged or kept in exception history (although they are reraised).
+    By default, no exceptions are ignored.
 
     To use the reconfigured filter in the
     pipeline::

@@ -29,7 +29,7 @@ import meld3
 _HERE = os.path.abspath(os.path.dirname(__file__))
 
 class ErrorLog:
-    def __init__(self, application, channel, keep, path):
+    def __init__(self, application, channel, keep, path, ignored_exceptions):
         """ WSGI Middleware which logs errors to a confligurable place
         and exposes a web user interface to display the last N errors.
 
@@ -42,12 +42,16 @@ class ErrorLog:
           through the web viewing.
 
         o path is the path to the error log view (e.g. '/__error_log__').
+
+        o ignored_exceptions is a list of exceptions (Python references) to
+          ignore (to refrain from logging or adding to exception history).
         """
         self.application = application
         self.channel = channel
         self.keep = keep
         self.path = path
         self.counter = 0
+        self.ignored_exceptions = ignored_exceptions
         self.errors = []
 
     def new_identifier(self):
@@ -79,6 +83,9 @@ class ErrorLog:
             environ['repoze.errorlog.entryid'] = identifier
             try:
                 return self.application(environ, start_response)
+            except self.ignored_exceptions:
+                # just reraise an ignored exception
+                raise
             except:
                 self.insert_error(identifier, sys.exc_info(), environ)
                 if self.channel is None:
@@ -154,4 +161,18 @@ def make_errorlog(app, global_conf, **local_conf):
     channel = local_conf.get('channel', None)
     keep = int(local_conf.get('keep', 20))
     path = local_conf.get('path', '/__error_log__')
-    return ErrorLog(app, channel, keep, path)
+    ignore = local_conf.get('ignore', None)
+    # e.g. Paste.httpexceptions.HTTPFound,
+    # Paste.httpexceptions.HTTPUnauthorized, Paste.httpexceptions.HTTPNotFound
+    ignored_exceptions = []
+    if ignore:
+        from pkg_resources import EntryPoint
+        ignore_names = [ name.strip() for name in ignore.split() ]
+        for name in ignore_names:
+            if __builtins__.has_key(name):
+                ignored_exc = __builtins__[name]
+            else:
+                ignored_exc = EntryPoint.parse('x=%s' % name).load(False)
+            ignored_exceptions.append(ignored_exc)
+    ignored_exceptions = tuple(ignored_exceptions)
+    return ErrorLog(app, channel, keep, path, ignored_exceptions)

@@ -1,5 +1,10 @@
 Next Release
 
+  - Add 'ignore' feature to configuration.  A value consisting of
+    space-separated entry point names can be used here, indicating
+    that these exception types should not be logged or kept in
+    exception history.
+
   - Allow __error_log__ view path to be configured via 'path' entry in
     Paste configuration.
 
