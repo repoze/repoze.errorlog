@@ -1,3 +1,12 @@
+Next Release
+
+  - Allow __error_log__ view path to be configured via 'path' entry in
+    Paste configuration.
+
+  - Place 'repoze.errorlog.path' and 'repoze.errorlog.entryid' in the
+    WSGI environment to allow error-catching middleware and apps to
+    compose URLs to errors.
+
 0.3
 
   - 0.2 didn't work as a filter. :-(

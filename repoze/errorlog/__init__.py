@@ -29,7 +29,7 @@ import meld3
 _HERE = os.path.abspath(os.path.dirname(__file__))
 
 class ErrorLog:
-    def __init__(self, application, channel, keep):
+    def __init__(self, application, channel, keep, path):
         """ WSGI Middleware which logs errors to a confligurable place
         and exposes a web user interface to display the last N errors.
 
@@ -37,16 +37,28 @@ class ErrorLog:
 
         o 'channel' is the logging "channel" (logger name) to send error log
           messages to.
+
+        o 'keep' is the number of errors to keep in exception history for
+          through the web viewing.
+
+        o path is the path to the error log view (e.g. '/__error_log__').
         """
         self.application = application
         self.channel = channel
         self.keep = keep
+        self.path = path
+        self.counter = 0
         self.errors = []
+
+    def new_identifier(self):
+        identifier = str(self.counter)
+        self.counter += 1
+        return identifier
         
     def __call__(self, environ, start_response):
         path_info = environ.get('PATH_INFO')
 
-        if path_info == '/__error_log__':
+        if path_info == self.path:
             # we're being asked to render a view
             querydata = dict(parse_querystring(environ))
             if 'entry' in querydata:
@@ -59,10 +71,16 @@ class ErrorLog:
             return [body]
         else:
             # we need to try to catch an error
+            identifier = self.new_identifier()
+            # we place the error log path and identifier in the
+            # environment so the application or other middleware can
+            # form a URL to the exception
+            environ['repoze.errorlog.path'] = self.path
+            environ['repoze.errorlog.entryid'] = identifier
             try:
                 return self.application(environ, start_response)
             except:
-                self.insert_error(sys.exc_info(), environ)
+                self.insert_error(identifier, sys.exc_info(), environ)
                 if self.channel is None:
                     errors = environ.get('wsgi.errors')
                     if errors:
@@ -111,25 +129,29 @@ class ErrorLog:
             if error.identifier == identifier:
                 return error
 
-    def insert_error(self, exc_info, environ):
+    def insert_error(self, identifier, exc_info, environ):
         if len(self.errors) >= self.keep:
             self.errors.pop()
         f = StringIO.StringIO()
-        traceback.print_exception(exc_info[0], exc_info[1], exc_info[2], None,f)
-        error = Error(str(time.time()), str(exc_info[0]), f.getvalue(),
-                      time.ctime(), environ)
+        # we can't unpack the exception tuple or we'd cause a cycle
+        traceback.print_exception(exc_info[0],exc_info[1],exc_info[2],None,f)
+        desc = str(exc_info[0])
+        tb_rendering = f.getvalue()
+        time_str = time.ctime()
+        url = self.path +'?entry=%s' % identifier
+        error = Error(identifier, desc, tb_rendering, time_str, environ, url)
         self.errors.insert(0, error)
         
 class Error:
-    def __init__(self, identifier, description, tb_rendering, time, environ):
+    def __init__(self, identifier, desc, tb_rendering, time, environ, url):
         self.identifier = identifier
-        self.description = description
+        self.description = desc
         self.text = tb_rendering + '\n\n' + pprint.pformat(environ)
         self.time = time
-        url = '/__error_log__'
-        self.url = url + '?entry=%s' % self.identifier
+        self.url = url
     
 def make_errorlog(app, global_conf, **local_conf):
     channel = local_conf.get('channel', None)
     keep = int(local_conf.get('keep', 20))
-    return ErrorLog(app, channel, keep)
+    path = local_conf.get('path', '/__error_log__')
+    return ErrorLog(app, channel, keep, path)

@@ -23,8 +23,8 @@ repoze.errorlog README
                    zope2
 
     If you want to override the default configuration, you need to
-    make a separate section for the filter.  The only Paste
-    configuration options at this time are "channel" and "keep".  To
+    make a separate section for the filter.  The Paste configuration
+    options at this time are "channel", "keep" and "path".  To
     configure repoze.errorlog to use the 'Repoze' logging channel,
     which sends to the 'Repoze' logging channel, as if you had send to
     a logger from code where you did 'from logging import getLogger;
@@ -34,11 +34,15 @@ repoze.errorlog README
       [filter:errorlog]
       channel = Repoze
       keep = 50
+      path = /__my_error_log__
 
     By default, no channel is configured, and tracebacks are sent to
     the 'wsgi.errors' file handle (which should cause the errors to
     show up in your server's error log).  By default, the exception
     history length ('keep') is 20.
+
+    By default, the error log's path is '/__error_log__'; you can
+    change this as necessary for your deployment.
 
     To use the reconfigured filter in the
     pipeline::
@@ -57,3 +61,25 @@ repoze.errorlog README
     you the traceback and a rendering of the WSGI environment which
     was present at the time the exception occurred.
 
+  Integrating
+
+    When repoze.errorlog is placed into the pipeline, two keys are
+    placed into the wsgi environment on every request (even when an
+    exception is not raised and caught by repoze.errorlog)::
+
+      repoze.errorlog.path -- the path at which the errorlog is configured
+
+      repoze.errorlog.entryid -- the entry id of the next error
+
+    Middleware and applications that catch exceptions can compose a
+    URL to the 'current' error (for helpful development feedback) when
+    they know repoze.errorlog is in the pipeline by using the
+    following code::
+
+      from paste.request import construct_url
+      path = environ['repoze.errorlog.path']
+      entry = environ['repoze.errorlog.entryid']
+      url = construct_url(environ, path_info=path, 
+                          querystring='entry=%s' % entry)
+
+         
