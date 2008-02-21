@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-__version__ = '0.4'
+__version__ = '0.5'
 
 import os
 
@@ -50,7 +50,7 @@ setup(name='repoze.errorlog',
       tests_require = [],
       install_requires=[
            'meld3 >= 0.6.3',
-           'elementtree >= 1.2.6',
+           'elementtree >= 1.2.6, < 1.2.7',
            'Paste >= 1.5',
            ],
       test_suite="repoze.errorlog.tests",

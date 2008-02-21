@@ -1,3 +1,6 @@
+0.5
+
+  - Depend on elementree 1.2.6 explicitly.
 0.4
 
   - Add 'ignore' feature to configuration.  A value consisting of
