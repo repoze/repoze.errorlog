@@ -17,7 +17,6 @@ import os
 import pprint
 import sys
 import traceback
-import tempfile
 import time
 import StringIO
 

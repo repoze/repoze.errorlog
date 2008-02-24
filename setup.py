@@ -47,9 +47,13 @@ setup(name='repoze.errorlog',
       include_package_data=True,
       namespace_packages=['repoze'],
       zip_safe=False,
-      tests_require = [],
-      install_requires=[
-           'meld3 >= 0.6.3',
+      tests_require = [
+           'meld3 >= 0.6.4',
+           'elementtree >= 1.2.6, < 1.2.7',
+           'Paste >= 1.5',
+           ],
+      install_requires = [
+           'meld3 >= 0.6.4',
            'elementtree >= 1.2.6, < 1.2.7',
            'Paste >= 1.5',
            ],

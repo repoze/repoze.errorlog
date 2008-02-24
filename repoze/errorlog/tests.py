@@ -150,7 +150,6 @@ class TestErrorLogging(unittest.TestCase):
         L = []
         def start_response(code, headers):
             L.append((code, headers))
-        from repoze.errorlog import Error
         elog.errors = []
         bodylist = elog(env, start_response)
         body = bodylist[0]
