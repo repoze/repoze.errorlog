@@ -1,3 +1,7 @@
+Unreleased
+
+  - Bump ez_setup.py version.
+
 0.5
 
   - Depend on elementree 1.2.6 explicitly.
