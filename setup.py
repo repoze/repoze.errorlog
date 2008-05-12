@@ -47,19 +47,20 @@ setup(name='repoze.errorlog',
       namespace_packages=['repoze'],
       zip_safe=False,
       tests_require = [
-           'meld3 >= 0.6.4',
-           'elementtree >= 1.2.6, < 1.2.7',
-           'Paste >= 1.5',
+           'meld3',
+           'elementtree',
+           'Paste',
            ],
       install_requires = [
-           'meld3 >= 0.6.4',
-           'elementtree >= 1.2.6, < 1.2.7',
-           'Paste >= 1.5',
+           'meld3',
+           'elementtree',
+           'Paste',
            ],
       test_suite="repoze.errorlog.tests",
       entry_points = """\
       [paste.filter_app_factory]
       errorlog = repoze.errorlog:make_errorlog
+      pdbpm = repoze.errorlog:make_post_mortem_debug
       """
       )
 

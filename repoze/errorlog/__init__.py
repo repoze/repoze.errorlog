@@ -14,6 +14,7 @@
 
 from logging import getLogger
 import os
+import pdb
 import pprint
 import sys
 import traceback
@@ -175,3 +176,20 @@ def make_errorlog(app, global_conf, **local_conf):
             ignored_exceptions.append(ignored_exc)
     ignored_exceptions = tuple(ignored_exceptions)
     return ErrorLog(app, channel, keep, path, ignored_exceptions)
+
+# stolen partly from z3c.evalexception
+def PostMortemDebug(application):
+    """Middleware that catches exceptions and invokes pdb's
+    post-mortem debugging facility."""
+    def middleware(environ, start_response):
+        try:
+            return application(environ, start_response)
+        except:
+            pdb.post_mortem(sys.exc_info()[2])
+            raise
+
+    return middleware
+
+def make_post_mortem_debug(app, global_conf):
+    return PostMortemDebug(app)
+

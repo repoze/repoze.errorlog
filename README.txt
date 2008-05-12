@@ -5,12 +5,9 @@ repoze.errorlog README
     This package implements a WSGI Middleware filter which intercepts
     exceptions and writes them to a Python 'logging' module channel
     (or the 'wsgi.errors' filehandle, if no channel is configured).
-
-  Installation
-
-    The simple way::
-
-      $ bin/easy_install --find-links=http://dist.repoze.org/ repoze.errorlog
+    It also allows the browsing of limited exception history via a
+    browser UI.  It also provides middleware that allows for
+    post-mortem debugging.
 
   Configuration
     
@@ -87,4 +84,15 @@ repoze.errorlog README
       url = construct_url(environ, path_info=path, 
                           querystring='entry=%s' % entry)
 
-         
+  Post-Mortem Debugging
+
+    You will be dropped into Python's PDB post-mortem debugger if you
+    run your WSGI app in the foreground and use the
+    'egg:repoze.errorlog#pdbpm' entry point in your Paste
+    configuration, eg.::
+
+      [pipeline:main]
+      pipeline = egg:Paste#cgitb
+                 egg:repoze.errorlog#pdbpm
+                 myapp
+ 
