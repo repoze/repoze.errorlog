@@ -1,4 +1,4 @@
-After 0.6
+0.7 (2008-05-21)
 
   - Add post-mortem debug middleware (egg:repoze.errorlog#pdbpm)
 
