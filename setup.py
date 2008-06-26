@@ -30,7 +30,7 @@ setup(name='repoze.errorlog',
       description='Error logging and reporting middleware',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
-        "Development Status :: 2 - Alpha",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
