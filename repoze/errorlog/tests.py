@@ -177,65 +177,6 @@ class TestErrorLogging(unittest.TestCase):
         self.assertEqual(elog.errors[0].__class__, Error)
         del exc_info
 
-class TestPDBPM(unittest.TestCase):
-    def _getFUT(self):
-        from repoze.errorlog import PostMortemDebug
-        return PostMortemDebug
-
-    def _makeOne(self, app):
-        f = self._getFUT()
-        return f(app)
-
-    def test_post_mortem_withexc(self):
-        app = DummyApplication(KeyError)
-        mw = self._makeOne(app)
-        fake_pdb = FakePDB()
-        try:
-            import repoze.errorlog
-            old_pdb = repoze.errorlog.pdb
-            repoze.errorlog.pdb = fake_pdb
-            environ = {}
-            self.assertRaises(KeyError, mw, environ, None)
-        finally:
-            repoze.errorlog.pdb = old_pdb
-        self.assertEqual(fake_pdb.called, True)
-
-    def test_post_mortem_noexc(self):
-        app = DummyApplication()
-        mw = self._makeOne(app)
-        fake_pdb = FakePDB()
-        try:
-            import repoze.errorlog
-            old_pdb = repoze.errorlog.pdb
-            repoze.errorlog.pdb = fake_pdb
-            environ = {}
-            result = mw(environ, None)
-        finally:
-            repoze.errorlog.pdb = old_pdb
-        self.assertEqual(fake_pdb.called, False)
-        self.assertEqual(result, ['hello world'])
-
-    def test_paste_constructor(self):
-        app = DummyApplication() 
-        from repoze.errorlog import make_post_mortem_debug
-        mw = make_post_mortem_debug(app, None)
-        fake_pdb = FakePDB()
-        try:
-            import repoze.errorlog
-            old_pdb = repoze.errorlog.pdb
-            repoze.errorlog.pdb = fake_pdb
-            environ = {}
-            result = mw(environ, None)
-        finally:
-            repoze.errorlog.pdb = old_pdb
-        self.assertEqual(fake_pdb.called, False)
-        self.assertEqual(result, ['hello world'])
-
-class FakePDB:
-    called = False
-    def post_mortem(self, *args):
-        self.called = True
-
 class DummyApplication:
     def __init__(self, exc=None):
         self.exc = exc
@@ -250,8 +191,3 @@ class DummyApplication:
 class DummyException(Exception):
     pass
 
-def test_suite():
-    return unittest.findTestCases(sys.modules[__name__])
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

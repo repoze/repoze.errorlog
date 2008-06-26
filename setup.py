@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-__version__ = '0.7'
+__version__ = '0.8'
 
 import os
 
@@ -23,11 +23,12 @@ from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()
+CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 setup(name='repoze.errorlog',
       version=__version__,
       description='Error logging and reporting middleware',
-      long_description=README,
+      long_description=README + '\n\n' + CHANGES,
       classifiers=[
         "Development Status :: 2 - Alpha",
         "Intended Audience :: Developers",
@@ -60,7 +61,6 @@ setup(name='repoze.errorlog',
       entry_points = """\
       [paste.filter_app_factory]
       errorlog = repoze.errorlog:make_errorlog
-      pdbpm = repoze.errorlog:make_post_mortem_debug
       """
       )
 

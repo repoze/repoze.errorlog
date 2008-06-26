@@ -1,3 +1,9 @@
+0.8 (2008-06-25)
+
+  - Remove post-mortem debug middleware (moved to repoze.debug).
+
+  - Initial PyPI release.
+
 0.7 (2008-05-21)
 
   - Add post-mortem debug middleware (egg:repoze.errorlog#pdbpm)
