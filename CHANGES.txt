@@ -1,3 +1,8 @@
+0.9 (unreleased)
+
+  - Avoid a dependency on `elementtree` when used with Python 2.5 and later.
+    In those Python versions we used the built-in xml.etree support.
+
 0.8 (2008-06-25)
 
   - Remove post-mortem debug middleware (moved to repoze.debug).
