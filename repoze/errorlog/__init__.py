@@ -102,8 +102,8 @@ class ErrorLog:
         if self.errors:
             iterator = root.findmeld('error_li').repeat(self.errors)
             for li_element, error in iterator:
-                time = li_element.findmeld('error_time')
-                time.content(error.time)
+                t = li_element.findmeld('error_time')
+                t.content(error.time)
                 url = li_element.findmeld('error_url')
                 url.attributes(href=error.url)
                 url.content(error.description)

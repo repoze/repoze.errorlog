@@ -121,6 +121,19 @@ class TestErrorLogging(unittest.TestCase):
         self.failUnless('description1' in body)
         self.failUnless('description2' in body)
         self.failUnless('Recent Errors' in body)
+
+    def test_show_index_view_noerrors(self):
+        env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
+               'SERVER_NAME':'localhost', 'SERVER_PORT':'8080'}
+        elog = self._makeOne(None, channel=None, keep=10,
+                             path='/__error_log__', ignored_exceptions=())
+        L = []
+        def start_response(code, headers):
+            L.append((code, headers))
+        elog.errors = []
+        bodylist = elog(env, start_response)
+        body = bodylist[0]
+        self.failUnless('No Recent Errors' in body)
         
     def test_show_entry_view_present(self):
         env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
