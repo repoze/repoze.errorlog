@@ -60,7 +60,7 @@ class TestErrorLogging(unittest.TestCase):
         errors = StringIO()
         env = {'wsgi.errors':errors}
         self.assertRaises(KeyError, elog, env, None)
-        self.failIf(errors.getvalue().find('KeyError') == -1)
+        self.failUnless('KeyError' in errors.getvalue())
         self.assertEqual(env['repoze.errorlog.path'], '/__error_log__')
         self.assertEqual(env['repoze.errorlog.entryid'], '0')
 
@@ -71,13 +71,12 @@ class TestErrorLogging(unittest.TestCase):
                              path='/__error_log__', ignored_exceptions=())
         env = {}
         self.assertRaises(KeyError, elog, env, None)
-        self.failIf(self.errorstream.getvalue().find('KeyError') == -1)
+        self.failUnless('KeyError' in self.errorstream.getvalue())
         self.assertEqual(env['repoze.errorlog.path'], '/__error_log__')
         self.assertEqual(env['repoze.errorlog.entryid'], '0')
 
     def test_log_ignored_builtin_exceptions(self):
         app = DummyApplication(KeyError)
-        root = ''
         from StringIO import StringIO
         errors = StringIO()
         env = {'wsgi.errors':errors}
