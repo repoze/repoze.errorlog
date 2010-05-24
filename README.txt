@@ -7,8 +7,7 @@ Overview
 This package implements a WSGI middleware filter which intercepts
 exceptions and writes them to a Python logging module channel (or the
 ``wsgi.errors`` filehandle, if no channel is configured).  It also
-allows the browsing of limited exception history via a browser UI.  It
-also provides middleware that allows for post-mortem debugging.
+allows the browsing of limited exception history via a browser UI.
 
 Configuration
 -------------
