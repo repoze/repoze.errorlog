@@ -1,6 +1,12 @@
 0.9 (unreleased)
 ----------------
 
+- Bump copyrights.
+
+- Remove dependency on ``ez_setup.py``.
+
+- Docs now show how to use ``ErrorLog`` outside PasteDeploy.
+
 - Avoid a dependency on `elementtree` when used with Python 2.5 and later.
   In those Python versions we used the built-in xml.etree support.
 

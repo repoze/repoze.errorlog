@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2007 Agendaless Consulting and Contributors.
+# Copyright (c) 2007-2010 Agendaless Consulting and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the BSD-like license at
@@ -17,9 +17,6 @@ __version__ = '0.8'
 import os
 import sys
 
-from ez_setup import use_setuptools
-use_setuptools()
-
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -31,9 +28,8 @@ REQUIREMENTS = [
      'Paste',
      ]
 
-# elementtree is only required before Python 2.5.
-# The dependency is also not caused by ourselves but by meld3, which
-# fails to declare it.
+# elementtree is only required before Python 2.5.  The dependency is
+# not caused by ourselves but by meld3, which fails to declare it.
 if sys.version_info[:3] < (2,5,0):
     REQUIREMENTS.append('elementtree')
 
