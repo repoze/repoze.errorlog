@@ -1,5 +1,5 @@
-Next release
-------------
+0.9.1 (2010-05-23)
+------------------
 
 - Make it possible to send exceptions to a logger channel as described
   in the docs; this didn't actually work previously because a) I'm not
