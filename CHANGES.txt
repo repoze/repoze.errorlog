@@ -1,7 +1,12 @@
 Next release
 ------------
 
-- ...
+- Make it possible to send exceptions to a logger channel as described
+  in the docs; this didn't actually work previously because a) I'm not
+  very good at programming and b) the Python logging module is
+  terrible (using ``s[-1]`` and not catching an exception when the
+  string is empty rather than using ``s.endswith()``, at least under
+  Python 2.4).
 
 0.9 (2010-05-23)
 ----------------

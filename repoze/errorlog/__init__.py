@@ -93,7 +93,7 @@ class ErrorLog:
                         traceback.print_exc(None, errors)
                 else:
                     logger = getLogger(self.channel)
-                    logger.exception('')
+                    logger.exception('\n')
                 raise
 
     def index(self, url):
