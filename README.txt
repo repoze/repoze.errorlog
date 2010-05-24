@@ -13,7 +13,7 @@ Configuration
 -------------
     
 If you want to use the default configuration, you can just include the
-filter in your application's pipeline, e.g.::
+filter in your application's PasteDeploy pipeline, e.g.::
 
   [pipeline:main]
   pipeline = egg:Paste#cgitb
@@ -53,6 +53,12 @@ To use the reconfigured filter in the pipeline::
    pipeline = egg:Paste#cgitb
               errorlog
               yourapp
+
+If you don't use PasteDeploy, you can configure the ErrorLog
+middleware manually::
+
+  app = ErrorLog(app, channel=None, keep=20, path='/__error_log__', 
+                 ignored_exceptions=())
 
 Usage
 -----
