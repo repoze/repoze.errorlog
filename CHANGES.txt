@@ -1,6 +1,8 @@
 Next release
 ------------
 
+- Added support for continuous integration using ``tox`` and ``jenkins``.
+
 - Added support for PyPy.
 
 - Added 'setup.py dev' alias (runs ``setup.py develop`` plus installs
