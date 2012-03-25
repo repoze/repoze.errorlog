@@ -23,7 +23,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
-REQUIREMENTS = [
+requires = [
      'meld3',
      'Paste',
      ]
@@ -31,7 +31,9 @@ REQUIREMENTS = [
 # elementtree is only required before Python 2.5.  The dependency is
 # not caused by ourselves but by meld3, which fails to declare it.
 if sys.version_info[:3] < (2,5,0):
-    REQUIREMENTS.append('elementtree')
+    requires.append('elementtree')
+
+testing_extras = ['nose', 'coverage']
 
 setup(name='repoze.errorlog',
       version=__version__,
@@ -55,12 +57,15 @@ setup(name='repoze.errorlog',
       include_package_data=True,
       namespace_packages=['repoze'],
       zip_safe=False,
-      tests_require = REQUIREMENTS,
-      install_requires = REQUIREMENTS,
+      tests_require = requires,
+      install_requires = requires,
       test_suite="repoze.errorlog.tests",
       entry_points = """\
       [paste.filter_app_factory]
       errorlog = repoze.errorlog:make_errorlog
-      """
-      )
+      """,
+      extras_require = {
+        'testing':  requires + testing_extras,
+      }
+)
 
