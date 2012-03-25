@@ -1,6 +1,8 @@
 Next release
 ------------
 
+- Added support for PyPy.
+
 - Added 'setup.py dev' alias (runs ``setup.py develop`` plus installs
   ``nose`` and ``coverage``).
 

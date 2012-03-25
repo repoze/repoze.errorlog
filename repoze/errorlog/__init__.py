@@ -167,9 +167,12 @@ def make_errorlog(app, global_conf, **local_conf):
     if ignore:
         from pkg_resources import EntryPoint
         ignore_names = [ name.strip() for name in ignore.split() ]
+        bdict = __builtins__
+        if not isinstance(bdict, dict): #pragma NO COVER pypy
+            bdict = bdict.__dict__
         for name in ignore_names:
-            if __builtins__.has_key(name):
-                ignored_exc = __builtins__[name]
+            if name in bdict:
+                ignored_exc = bdict[name]
             else:
                 ignored_exc = EntryPoint.parse('x=%s' % name).load(False)
             ignored_exceptions.append(ignored_exc)
