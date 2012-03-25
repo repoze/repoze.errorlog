@@ -1,6 +1,9 @@
 Next release
 ------------
 
+- Added 'setup.py dev' alias (runs ``setup.py develop`` plus installs
+  ``nose`` and ``coverage``).
+
 - Moved to github.
 
 0.9.1 (2010-05-23)
