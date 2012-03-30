@@ -28,11 +28,6 @@ requires = [
      'Paste',
      ]
 
-# elementtree is only required before Python 2.5.  The dependency is
-# not caused by ourselves but by meld3, which fails to declare it.
-if sys.version_info[:3] < (2,5,0):
-    requires.append('elementtree')
-
 testing_extras = ['nose', 'coverage']
 
 setup(name='repoze.errorlog',
@@ -42,8 +37,6 @@ setup(name='repoze.errorlog',
       classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
-        "Programming Language :: Python :: 2.4",
-        "Programming Language :: Python :: 2.5",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: Implementation :: CPython",
