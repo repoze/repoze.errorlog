@@ -178,7 +178,12 @@ def make_errorlog(app, global_conf, **local_conf):
             if name in bdict:
                 ignored_exc = bdict[name]
             else:
-                ignored_exc = EntryPoint.parse('x=%s' % name)._load()
+                ep = EntryPoint.parse('x=%s' % name)
+                try:
+                    ignored_exc = EntryPoint.parse('x=%s' % name)._load()
+                except AttributeError: # pragma NO COVER older setuptools
+                    ignored_exc = EntryPoint.parse('x=%s' % name).load(False)
+
             ignored_exceptions.append(ignored_exc)
     ignored_exceptions = tuple(ignored_exceptions)
     return ErrorLog(app, channel, keep, path, ignored_exceptions)
