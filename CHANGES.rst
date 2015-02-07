@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.0 (unreleased)
+1.0.0 (2015-02-07)
 ------------------
 
 - Add support for Python 3.2, 3,3, and 3.4, and PyPy3.
