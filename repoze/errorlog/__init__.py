@@ -19,9 +19,8 @@ import sys
 import traceback
 import time
 import StringIO
-
-from paste.request import construct_url
-from paste.request import parse_querystring
+from urlparse import parse_qsl
+from urllib import quote
 
 import meld3
 
@@ -63,11 +62,11 @@ class ErrorLog:
 
         if path_info == self.path:
             # we're being asked to render a view
-            querydata = dict(parse_querystring(environ))
+            querydata = dict(_parse_querystring(environ))
             if 'entry' in querydata:
                 body = self.entry(querydata['entry'])
             else:
-                url = construct_url(environ, with_query_string=False)
+                url = _construct_url(environ)
                 body = self.index(url)
             start_response('200 OK', [('content-type', 'text/html'),
                                       ('content-length', str(len(body)))])
@@ -183,3 +182,58 @@ def make_errorlog(app, global_conf, **local_conf):
     ignored_exceptions = tuple(ignored_exceptions)
     return ErrorLog(app, channel, keep, path, ignored_exceptions)
 
+
+def _parse_querystring(environ):
+    """Parse a query string into a list like ``[(name, value)]``.
+
+    You can pass the result to ``dict()``, but be aware that keys that
+    appear multiple times will be lost (only the last value will be
+    preserved).
+
+    Forked / simplified from ``paste.request.parse_querystring`` (to allow
+    port to Py3k).
+    """
+    source = environ.get('QUERY_STRING', '')
+    if not source:
+        return []
+    parsed = parse_qsl(source, keep_blank_values=True, strict_parsing=False)
+    return parsed
+
+
+def _construct_url(environ):
+    """Reconstruct the URL from the WSGI environment.
+
+    You may override SCRIPT_NAME, PATH_INFO, and QUERYSTRING with
+    the keyword arguments.
+
+    Forked / simplified from ``paste.request.construct_url`` (to allow
+    port to Py3k).
+    """
+    url = environ['wsgi.url_scheme'] + '://'
+
+    if environ.get('HTTP_HOST'):
+        host = environ['HTTP_HOST']
+        port = None
+        if ':' in host:
+            host, port = host.split(':', 1)
+            if environ['wsgi.url_scheme'] == 'https':
+                if port == '443':
+                    port = None
+            elif environ['wsgi.url_scheme'] == 'http':
+                if port == '80':
+                    port = None
+        url += host
+        if port:
+            url += ':%s' % port
+    else:
+        url += environ['SERVER_NAME']
+        if environ['wsgi.url_scheme'] == 'https':
+            if environ['SERVER_PORT'] != '443':
+                url += ':' + environ['SERVER_PORT']
+        else:
+            if environ['SERVER_PORT'] != '80':
+                url += ':' + environ['SERVER_PORT']
+
+    url += quote(environ.get('SCRIPT_NAME',''))
+    url += quote(environ.get('PATH_INFO',''))
+    return url

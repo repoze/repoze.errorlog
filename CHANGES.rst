@@ -4,6 +4,9 @@ Changelog
 1.0.0 (unreleased)
 ------------------
 
+- Drop dependency on ``Paste`` (forking / simplifying
+  ``paste.request.parse_querystring`` and ``paste.request.construct_url``).
+
 - Add support for testing on Travis.
 
 - Add Sphinx documentation.

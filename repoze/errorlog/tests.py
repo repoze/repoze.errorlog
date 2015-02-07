@@ -189,6 +189,118 @@ class TestErrorLogging(unittest.TestCase):
         self.assertEqual(elog.errors[0].__class__, Error)
         del exc_info
 
+
+class Test__parse_querystring(unittest.TestCase):
+
+    def _callFUT(self, environ):
+        from repoze.errorlog import _parse_querystring
+        return _parse_querystring(environ)
+
+    def test_no_qs(self):
+        environ = {}
+        found = self._callFUT(environ)
+        self.assertEqual(found, [])
+
+    def test_simple(self):
+        environ = {'QUERY_STRING': 'a=1&b=2&c=3'}
+        found = self._callFUT(environ)
+        self.assertEqual(found,
+                         [('a', '1'), ('b', '2'), ('c', '3')])
+
+    def test_w_repeats(self):
+        environ = {'QUERY_STRING': 'a=1&b=2&c=3&b=4'}
+        found = self._callFUT(environ)
+        self.assertEqual(found,
+                         [('a', '1'), ('b', '2'), ('c', '3'), ('b', '4')])
+
+    def test_w_empty(self):
+        environ = {'QUERY_STRING': 'a&b&c=&d=1'}
+        found = self._callFUT(environ)
+        self.assertEqual(found, [('a', ''), ('b', ''), ('c', ''), ('d', '1')])
+
+
+class Test__construct_url(unittest.TestCase):
+
+    def _callFUT(self, environ):
+        from repoze.errorlog import _construct_url
+        return _construct_url(environ)
+
+    def test_w_HTTP_HOST_wo_port(self):
+        environ = _makeEnviron({'HTTP_HOST': 'example.com'})
+        self.assertEqual(self._callFUT(environ), 'http://example.com')
+
+    def test_w_HTTP_HOST_w_default_http_port(self):
+        environ = _makeEnviron({'HTTP_HOST': 'example.com:80'})
+        self.assertEqual(self._callFUT(environ), 'http://example.com')
+
+    def test_w_HTTP_HOST_w_non_default_http_port(self):
+        environ = _makeEnviron({'HTTP_HOST': 'example.com:8080'})
+        self.assertEqual(self._callFUT(environ), 'http://example.com:8080')
+
+    def test_w_HTTP_HOST_w_default_https_port(self):
+        environ = _makeEnviron({'HTTP_HOST': 'example.com:443',
+                                'wsgi.url_scheme': 'https',
+                               })
+        self.assertEqual(self._callFUT(environ), 'https://example.com')
+
+    def test_w_HTTP_HOST_w_non_default_https_port(self):
+        environ = _makeEnviron({'HTTP_HOST': 'example.com:4443',
+                                'wsgi.url_scheme': 'https',
+                               })
+        self.assertEqual(self._callFUT(environ), 'https://example.com:4443')
+
+    def test_wo_HTTP_HOST_w_default_http_port(self):
+        environ = _makeEnviron({'SERVER_NAME': 'example.com',
+                                'SERVER_PORT': '80',
+                               })
+        self.assertEqual(self._callFUT(environ), 'http://example.com')
+
+    def test_wo_HTTP_HOST_w_non_default_http_port(self):
+        environ = _makeEnviron({'SERVER_NAME': 'example.com',
+                                'SERVER_PORT': '8080',
+                               })
+        self.assertEqual(self._callFUT(environ), 'http://example.com:8080')
+
+    def test_wo_HTTP_HOST_w_default_https_port(self):
+        environ = _makeEnviron({'SERVER_NAME': 'example.com',
+                                'SERVER_PORT': '443',
+                                'wsgi.url_scheme': 'https',
+                               })
+        self.assertEqual(self._callFUT(environ), 'https://example.com')
+
+    def test_wo_HTTP_HOST_w_non_default_https_port(self):
+        environ = _makeEnviron({'SERVER_NAME': 'example.com',
+                                'SERVER_PORT': '4443',
+                                'wsgi.url_scheme': 'https',
+                               })
+        self.assertEqual(self._callFUT(environ), 'https://example.com:4443')
+
+    def test_w_SCRIPT_NAME(self):
+        environ = _makeEnviron({'SERVER_NAME': 'example.com',
+                                'SERVER_PORT': '80',
+                                'SCRIPT_NAME': '/script/name',
+                               })
+        self.assertEqual(self._callFUT(environ),
+                         'http://example.com/script/name')
+
+    def test_w_PATH_INFO(self):
+        environ = _makeEnviron({'SERVER_NAME': 'example.com',
+                                'SERVER_PORT': '80',
+                                'PATH_INFO': '/path/info',
+                               })
+        self.assertEqual(self._callFUT(environ),
+                         'http://example.com/path/info')
+
+    def test_w_SCRIPT_NAME_and_PATH_INFO(self):
+        environ = _makeEnviron({'SERVER_NAME': 'example.com',
+                                'SERVER_PORT': '80',
+                                'SCRIPT_NAME': '/script/name',
+                                'PATH_INFO': '/path/info',
+                               })
+        self.assertEqual(self._callFUT(environ),
+                         'http://example.com/script/name/path/info')
+
+
 class DummyApplication:
     def __init__(self, exc=None):
         self.exc = exc
@@ -203,3 +315,19 @@ class DummyApplication:
 class DummyException(Exception):
     pass
 
+
+def _makeEnviron(override=None):
+    import io
+    environ = {
+        'SERVER_NAME': 'localhost',
+        'SERVER_PORT': '80',
+        'wsgi.version': (1, 0),
+        'wsgi.multiprocess': False,
+        'wsgi.multithread': True,
+        'wsgi.run_once': False,
+        'wsgi.url_scheme': 'http',
+        'wsgi.input': io.BytesIO(b'hello world'),
+        }
+    if override is not None:
+        environ.update(override)
+    return environ

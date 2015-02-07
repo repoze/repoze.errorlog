@@ -31,7 +31,6 @@ except IOError:
 
 requires = [
      'meld3',
-     'Paste',
      ]
 
 testing_extras = ['nose', 'coverage']
