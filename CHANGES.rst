@@ -1,5 +1,10 @@
-Next release
-------------
+Changelog
+=========
+
+1.0.0 (unreleased)
+------------------
+
+- Add Sphinx documentation.
 
 - Drop support for Python 2.4 / 2.5.
 
@@ -9,11 +14,11 @@ Next release
 - This release is the last which will maintain support for Python 2.4 /
   Python 2.5.
 
-- Added support for continuous integration using ``tox`` and ``jenkins``.
+- Add support for continuous integration using ``tox`` and ``jenkins``.
 
-- Added support for PyPy.
+- Add support for PyPy.
 
-- Added 'setup.py dev' alias (runs ``setup.py develop`` plus installs
+- Add 'setup.py dev' alias (runs ``setup.py develop`` plus installs
   ``nose`` and ``coverage``).
 
 - Moved to github.
@@ -38,48 +43,48 @@ Next release
 - Docs now show how to use ``ErrorLog`` outside PasteDeploy.
 
 - Avoid a dependency on `elementtree` when used with Python 2.5 and later.
-  In those Python versions we used the built-in xml.etree support.
+  In those Python versions we used the built-in ``xml.etree`` support.
 
 - 100% test coverage.
 
 0.8 (2008-06-25)
 ----------------
 
-- Remove post-mortem debug middleware (moved to repoze.debug).
+- Remove post-mortem debug middleware (moved to ``repoze.debug``).
 
 - Initial PyPI release.
 
 0.7 (2008-05-21)
 ----------------
 
-- Add post-mortem debug middleware (egg:repoze.errorlog#pdbpm)
+- Add post-mortem debug middleware (``egg:repoze.errorlog#pdbpm``)
 
 - Remove versions from dependencies.
 
 0.6
 ---
 
-- Get rid of find-link point to http://dist.repoze.org in setup.py.
+- Get rid of find-link point to http://dist.repoze.org in ``setup.py``.
 
-- Bump ez_setup.py version.
+- Bump ``ez_setup.py`` version.
 
 0.5
 ---
 
-- Depend on elementree 1.2.6 explicitly.
+- Depend on ``elementree`` 1.2.6 explicitly.
 
 0.4
 ---
 
-- Add 'ignore' feature to configuration.  A value consisting of
+- Add ``ignore`` feature to configuration.  A value consisting of
   space-separated entry point names can be used here, indicating that
   these exception types should not be logged or kept in exception
   history.
 
-- Allow __error_log__ view path to be configured via 'path' entry in
+- Allow ``__error_log__`` view path to be configured via ``path`` entry in
   Paste configuration.
 
-- Place 'repoze.errorlog.path' and 'repoze.errorlog.entryid' in the
+- Place ``repoze.errorlog.path`` and ``repoze.errorlog.entryid`` in the
   WSGI environment to allow error-catching middleware and apps to
   compose URLs to errors.
 
@@ -88,17 +93,16 @@ Next release
 
 - 0.2 didn't work as a filter. :-(
 
-- Don't use zope.pagetemplate, it has too many (potentially
-  conflicting) dependencies.  Instead use meld for template views.
+- Don't use ``zope.pagetemplate``, it has too many (potentially
+  conflicting) dependencies.  Instead use ``meld`` for template views.
 
 0.2
 ---
 
-- Provide a TTW view (accessible via '/__error_log__') of recent
+- Provide a TTW view (accessible via ``/__error_log__``) of recent
   tracebacks.
 
 0.1
 ---
 
 - Initial release.
-
