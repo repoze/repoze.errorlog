@@ -4,6 +4,8 @@ Changelog
 1.0.0 (unreleased)
 ------------------
 
+- Add support for testing on Travis.
+
 - Add Sphinx documentation.
 
 - Drop support for Python 2.4 / 2.5.
