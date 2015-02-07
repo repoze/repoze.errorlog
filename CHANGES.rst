@@ -4,6 +4,8 @@ Changelog
 1.0.0 (unreleased)
 ------------------
 
+- Add support for Python 3.2, 3,3, and 3.4, and PyPy3.
+
 - Drop dependency on ``Paste`` (forking / simplifying
   ``paste.request.parse_querystring`` and ``paste.request.construct_url``).
 

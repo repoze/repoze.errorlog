@@ -18,9 +18,10 @@ import pprint
 import sys
 import traceback
 import time
-import StringIO
-from urlparse import parse_qsl
-from urllib import quote
+
+from ._compat import NativeStream
+from ._compat import parse_qsl
+from ._compat import quote
 
 import meld3
 
@@ -137,7 +138,7 @@ class ErrorLog:
     def insert_error(self, identifier, exc_info, environ):
         if len(self.errors) >= self.keep:
             self.errors.pop()
-        f = StringIO.StringIO()
+        f = NativeStream()
         # we can't unpack the exception tuple or we'd cause a cycle
         traceback.print_exception(exc_info[0],exc_info[1],exc_info[2],None,f)
         desc = str(exc_info[0])

@@ -20,8 +20,8 @@ class TestTopLevelFuncs(unittest.TestCase):
 
 class TestErrorLogging(unittest.TestCase):
     def setUp(self):
-        from StringIO import StringIO
-        self.errorstream = StringIO()
+        from ._compat import NativeStream
+        self.errorstream = NativeStream()
         logging.basicConfig(stream = self.errorstream)
 
     def tearDown(self):
@@ -53,14 +53,14 @@ class TestErrorLogging(unittest.TestCase):
         self.assertEqual(env['repoze.errorlog.entryid'], '0')
         
     def test_log_exc_no_channel(self):
+        from ._compat import NativeStream
+        errors = NativeStream()
         app = DummyApplication(KeyError)
         elog = self._makeOne(app, channel=None, keep=10,
                              path='/__error_log__', ignored_exceptions=())
-        from StringIO import StringIO
-        errors = StringIO()
         env = {'wsgi.errors':errors}
         self.assertRaises(KeyError, elog, env, None)
-        self.failUnless('KeyError' in errors.getvalue())
+        self.assertTrue('KeyError' in errors.getvalue())
         self.assertEqual(env['repoze.errorlog.path'], '/__error_log__')
         self.assertEqual(env['repoze.errorlog.entryid'], '0')
 
@@ -71,14 +71,14 @@ class TestErrorLogging(unittest.TestCase):
                              path='/__error_log__', ignored_exceptions=())
         env = {}
         self.assertRaises(KeyError, elog, env, None)
-        self.failUnless('KeyError' in self.errorstream.getvalue())
+        self.assertTrue('KeyError' in self.errorstream.getvalue())
         self.assertEqual(env['repoze.errorlog.path'], '/__error_log__')
         self.assertEqual(env['repoze.errorlog.entryid'], '0')
 
     def test_log_ignored_builtin_exceptions(self):
+        from ._compat import NativeStream
+        errors = NativeStream()
         app = DummyApplication(KeyError)
-        from StringIO import StringIO
-        errors = StringIO()
         env = {'wsgi.errors':errors}
         elog = self._makeOne(app, channel=None, keep=10,
                              path='/__error_log__',
@@ -88,11 +88,11 @@ class TestErrorLogging(unittest.TestCase):
         self.assertEqual(elog.errors, [])
 
     def test_identifier_counter(self):
+        from ._compat import NativeStream
+        errors = NativeStream()
         app = DummyApplication(KeyError)
         elog = self._makeOne(app, channel=None, keep=10,
                              path='/__error_log__', ignored_exceptions=())
-        from StringIO import StringIO
-        errors = StringIO()
         env = {'wsgi.errors':errors}
         self.assertRaises(KeyError, elog, env, None)
         self.assertRaises(KeyError, elog, env, None)
@@ -115,11 +115,11 @@ class TestErrorLogging(unittest.TestCase):
             ]
         bodylist = elog(env, start_response)
         body = bodylist[0]
-        self.failUnless('time1' in body)
-        self.failUnless('time2' in body)
-        self.failUnless('description1' in body)
-        self.failUnless('description2' in body)
-        self.failUnless('Recent Errors' in body)
+        self.assertTrue(b'time1' in body)
+        self.assertTrue(b'time2' in body)
+        self.assertTrue(b'description1' in body)
+        self.assertTrue(b'description2' in body)
+        self.assertTrue(b'Recent Errors' in body)
 
     def test_show_index_view_noerrors(self):
         env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
@@ -132,7 +132,7 @@ class TestErrorLogging(unittest.TestCase):
         elog.errors = []
         bodylist = elog(env, start_response)
         body = bodylist[0]
-        self.failUnless('No Recent Errors' in body)
+        self.assertTrue(b'No Recent Errors' in body)
         
     def test_show_entry_view_present(self):
         env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
@@ -149,9 +149,9 @@ class TestErrorLogging(unittest.TestCase):
             ]
         bodylist = elog(env, start_response)
         body = bodylist[0]
-        self.failUnless('rendering1' in body)
-        self.failUnless('time1' in body)
-        self.failUnless('Error ' in body)
+        self.assertTrue(b'rendering1' in body)
+        self.assertTrue(b'time1' in body)
+        self.assertTrue(b'Error ' in body)
 
     def test_show_entry_view_absent(self):
         env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
@@ -165,7 +165,7 @@ class TestErrorLogging(unittest.TestCase):
         elog.errors = []
         bodylist = elog(env, start_response)
         body = bodylist[0]
-        self.failUnless('Error Expired' in body)
+        self.assertTrue(b'Error Expired' in body)
 
     def test_insert_error(self):
         env = {'PATH_INFO':'/__error_log__', 'wsgi.url_scheme':'http',
@@ -317,7 +317,7 @@ class DummyException(Exception):
 
 
 def _makeEnviron(override=None):
-    import io
+    from ._compat import NativeStream
     environ = {
         'SERVER_NAME': 'localhost',
         'SERVER_PORT': '80',
@@ -326,7 +326,7 @@ def _makeEnviron(override=None):
         'wsgi.multithread': True,
         'wsgi.run_once': False,
         'wsgi.url_scheme': 'http',
-        'wsgi.input': io.BytesIO(b'hello world'),
+        'wsgi.input': NativeStream('hello world'),
         }
     if override is not None:
         environ.update(override)
