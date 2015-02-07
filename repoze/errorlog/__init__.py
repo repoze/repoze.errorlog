@@ -178,7 +178,7 @@ def make_errorlog(app, global_conf, **local_conf):
             if name in bdict:
                 ignored_exc = bdict[name]
             else:
-                ignored_exc = EntryPoint.parse('x=%s' % name).load(False)
+                ignored_exc = EntryPoint.parse('x=%s' % name)._load()
             ignored_exceptions.append(ignored_exc)
     ignored_exceptions = tuple(ignored_exceptions)
     return ErrorLog(app, channel, keep, path, ignored_exceptions)
