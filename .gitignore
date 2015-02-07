@@ -9,3 +9,4 @@ dist/
 .tox
 nosetests.xml
 repoze/errorlog/coverage.xml
+docs/_build
