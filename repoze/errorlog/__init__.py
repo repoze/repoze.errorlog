@@ -149,6 +149,8 @@ class ErrorLog:
         self.errors.insert(0, error)
         
 class Error:
+    """Capture information about a single exception.
+    """
     def __init__(self, identifier, desc, tb_rendering, time, environ, url):
         self.identifier = identifier
         self.description = desc
@@ -157,6 +159,8 @@ class Error:
         self.url = url
     
 def make_errorlog(app, global_conf, **local_conf):
+    """Paste filterapp factory.
+    """
     channel = local_conf.get('channel', None)
     keep = int(local_conf.get('keep', 20))
     path = local_conf.get('path', '/__error_log__')
