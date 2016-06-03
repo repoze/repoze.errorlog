@@ -35,7 +35,7 @@ requires = [
 testing_extras = ['nose', 'coverage']
 
 setup(name='repoze.errorlog',
-      version='1.1',
+      version='1.1.1.dev0',
       description='Error logging and reporting middleware',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
