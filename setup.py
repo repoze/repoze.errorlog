@@ -12,7 +12,6 @@
 #
 ##############################################################################
 
-__version__ = '1.0.0'
 
 import os
 
@@ -36,7 +35,7 @@ requires = [
 testing_extras = ['nose', 'coverage']
 
 setup(name='repoze.errorlog',
-      version=__version__,
+      version='1.1.dev0',
       description='Error logging and reporting middleware',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
@@ -47,6 +46,7 @@ setup(name='repoze.errorlog',
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Programming Language :: Python",
