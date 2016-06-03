@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.1 (unreleased)
+----------------
+
+- Drop support for Python 2.6 and 3.2.
+
 1.0.0 (2015-02-07)
 ------------------
 
